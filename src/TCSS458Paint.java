@@ -63,7 +63,7 @@ public class TCSS458Paint extends JFrame {
 										worldToScreenX(Float.parseFloat(parts[3].trim())), worldToScreenY(Float.parseFloat(parts[4].trim())));
 								break;
 							case RGB:
-								setColor((int) Float.parseFloat(parts[1]), (int) Float.parseFloat(parts[2]), (int) Float.parseFloat(parts[3]));
+								setColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]), Float.parseFloat(parts[3]));
 								break;
 							case TRIANGLE:
 								drawTriangle(worldToScreenX(Float.parseFloat(parts[1].trim())), worldToScreenY(Float.parseFloat(parts[2].trim())),
@@ -100,11 +100,11 @@ public class TCSS458Paint extends JFrame {
 		
 	}
 	
-	private int worldToScreenColor(int c) {
-		return c * 255;
+	private int worldToScreenColor(float c) {
+		return (int) (c * 255);
 	}
 	
-	private void setColor(int r, int g, int b) {
+	private void setColor(float r, float g, float b) {
 		color[0] = worldToScreenColor(r);
 		color[1] = worldToScreenColor(g);
 		color[2] = worldToScreenColor(b);

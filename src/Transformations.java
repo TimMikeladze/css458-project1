@@ -97,10 +97,19 @@ public class Transformations {
         }
     }
 
-    public static void main(String[] args) {
+    public static void create(Vector3f v) {
+        try {
+            System.out.println(transformationMatrix);
+            transformationMatrix = transformationMatrix.multiply(v.toMatrix());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[]args) {
         Transformations.init();
-        Transformations.rotateX(90);
-        Transformations.translation(3, 4, 5);
+        Transformations.create(new Vector3f(3, 4, 5));
         System.out.println(Transformations.getTranformationMatrix());
     }
 }

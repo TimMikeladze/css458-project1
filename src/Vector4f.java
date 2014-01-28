@@ -29,8 +29,8 @@ public class Vector4f {
     }
 
     public Matrix toMatrix() {
-        return new Matrix(new float[][] { { x }, { y }, { z }, { w } });
-
+        Matrix m =  new Matrix(new float[][] { { x }, { y }, { z }, { w } });
+        return m;
     }
 
 }

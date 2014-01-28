@@ -35,7 +35,7 @@ public class Matrix {
             throw new Exception("Matrix dimensions don't match");
         }
 
-        Matrix result = new Matrix(this.rows, this.columns);
+        Matrix result = new Matrix(this.rows, matrix.columns);
         for (int i = 0; i < result.rows; i++) {
             for (int j = 0; j < result.columns; j++) {
                 for (int k = 0; k < this.columns; k++) {

@@ -8,14 +8,14 @@ public class Transformations {
     }
 
     public static void flush() {
-        transformationMatrix = null;
+        transformationMatrix = Matrix.identity(IDENTITY_MATRIX_SIZE);
     }
 
     public static Matrix getTranformationMatrix() {
         return transformationMatrix;
     }
 
-    public static void translation(float dx, float dy, float dz) {
+    public static void translate(float dx, float dy, float dz) {
         //@formatter:off
         float[][] data = {
                 {1, 0, 0, dx},
@@ -25,7 +25,7 @@ public class Transformations {
          //@formatter:on
 
         try {
-            transformationMatrix = transformationMatrix.multiply(new Matrix(data));
+            transformationMatrix = new Matrix(data).multiply(transformationMatrix);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -33,6 +33,7 @@ public class Transformations {
     }
 
     public static void rotateX(float deg) {
+        deg = (float) Math.toRadians(deg);
         //@formatter:off
         float[][] data = {
                 {1, 0, 0, 0},
@@ -41,7 +42,7 @@ public class Transformations {
                 {0, 0, 0, 1}};
          //@formatter:on
         try {
-            transformationMatrix = transformationMatrix.multiply(new Matrix(data));
+            transformationMatrix = new Matrix(data).multiply(transformationMatrix);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -49,6 +50,7 @@ public class Transformations {
     }
 
     public static void rotateY(float deg) {
+        deg = (float) Math.toRadians(deg);
         //@formatter:off
         float[][] data = {
                 {(float) Math.cos(deg), 0, (float) Math.sin(deg), 0},
@@ -57,7 +59,7 @@ public class Transformations {
                 {0, 0, 0, 1}};
          //@formatter:on
         try {
-            transformationMatrix = transformationMatrix.multiply(new Matrix(data));
+            transformationMatrix = new Matrix(data).multiply(transformationMatrix);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -65,6 +67,7 @@ public class Transformations {
     }
 
     public static void rotateZ(float deg) {
+        deg = (float) Math.toRadians(deg);
         //@formatter:off
         float[][] data = {
                 {(float) Math.cos(deg), (float) -Math.sin(deg), 0, 0},
@@ -73,7 +76,7 @@ public class Transformations {
                 {0, 0, 0, 1}};
          //@formatter:on
         try {
-            transformationMatrix = transformationMatrix.multiply(new Matrix(data));
+            transformationMatrix = new Matrix(data).multiply(transformationMatrix);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -90,26 +93,22 @@ public class Transformations {
          //@formatter:on
 
         try {
-            transformationMatrix = transformationMatrix.multiply(new Matrix(data));
+            transformationMatrix = new Matrix(data).multiply(transformationMatrix);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void create(Vector3f v) {
+    public static Point3f calculatePoint(Point3f p) {
         try {
-            System.out.println(transformationMatrix);
-            transformationMatrix = transformationMatrix.multiply(v.toMatrix());
+            Matrix m = transformationMatrix.multiply(p.toMatrix());
+            return new Point3f(m.getDataAt(0, 0), m.getDataAt(1, 0), m.getDataAt(2, 0));
         }
         catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    public static void main(String[]args) {
-        Transformations.init();
-        Transformations.create(new Vector3f(3, 4, 5));
-        System.out.println(Transformations.getTranformationMatrix());
-    }
 }

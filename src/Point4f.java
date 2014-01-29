@@ -1,11 +1,11 @@
-public class Vector4f {
+public class Point4f {
 
     private float x;
     private float y;
     private float z;
     private float w;
 
-    public Vector4f(float x, float y, float z, float w) {
+    public Point4f(float x, float y, float z, float w) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -32,5 +32,11 @@ public class Vector4f {
         Matrix m =  new Matrix(new float[][] { { x }, { y }, { z }, { w } });
         return m;
     }
+
+    @Override
+    public String toString() {
+        return "Point4f [x=" + x + ", y=" + y + ", z=" + z + ", w=" + w + "]";
+    }
+
 
 }

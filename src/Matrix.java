@@ -62,6 +62,10 @@ public class Matrix {
         return data;
     }
 
+    public float getDataAt(int row, int column) {
+        return data[row][column];
+    }
+
     @Override
     public String toString() {
         String s = "";

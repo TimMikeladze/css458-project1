@@ -13,6 +13,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import math.Matrix;
+import math.Vector4f;
+
 /**
  * @author Tim Mikeladze
  * 
@@ -31,10 +34,15 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 	private double xDegrees;
 	private double yDegrees;
 	
+	private int[][] zBuffer;
+	
 	public TCSS458Paint() {
 		
-		inputFile = openFile();
-		
+		//inputFile = openFile();
+		//inputFile = new File("frustumWireframeCube.txt");
+		//inputFile = new File("templeOrthoV2.txt");
+		inputFile = new File("templeFrustumV4.txt");
+		//inputFile = new File("templeSide.txt");
 		if (inputFile != null) {
 			setFocusable(true);
 			addKeyListener(this);
@@ -79,10 +87,10 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 								setDimensions((int) Float.parseFloat(parts[1]), (int) Float.parseFloat(parts[2]));
 								break;
 							case LINE:
-								Point3f point1 = Transformations.calculatePoint(new Point3f(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
-										Float.parseFloat(parts[3])));
-								Point3f point2 = Transformations.calculatePoint(new Point3f(Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
-										Float.parseFloat(parts[6])));
+								Vector4f point1 = Transformations.calculatePoint(new Vector4f(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+										Float.parseFloat(parts[3]), 1));
+								Vector4f point2 = Transformations.calculatePoint(new Vector4f(Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
+										Float.parseFloat(parts[6]), 1));
 								
 								drawLine(point1, point2);
 								break;
@@ -90,12 +98,12 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 								setColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]), Float.parseFloat(parts[3]));
 								break;
 							case TRIANGLE:
-								Point3f tri1 = Transformations.calculatePoint(new Point3f(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
-										Float.parseFloat(parts[3])));
-								Point3f tri2 = Transformations.calculatePoint(new Point3f(Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
-										Float.parseFloat(parts[6])));
-								Point3f tri3 = Transformations.calculatePoint(new Point3f(Float.parseFloat(parts[7]), Float.parseFloat(parts[8]),
-										Float.parseFloat(parts[9])));
+								Vector4f tri1 = Transformations.calculatePoint(new Vector4f(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+										Float.parseFloat(parts[3]), 1));
+								Vector4f tri2 = Transformations.calculatePoint(new Vector4f(Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
+										Float.parseFloat(parts[6]), 1));
+								Vector4f tri3 = Transformations.calculatePoint(new Vector4f(Float.parseFloat(parts[7]), Float.parseFloat(parts[8]),
+										Float.parseFloat(parts[9]), 1));
 								
 								drawTriangle(tri1, tri2, tri3);
 								break;
@@ -117,15 +125,39 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 							case TRANSLATE:
 								Transformations.translate(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]), Float.parseFloat(parts[3]));
 								break;
+							case SOLID_CUBE:
+								Vector4f sa = Transformations.calculatePoint(new Vector4f(-0.5f, -0.5f, 0.5f, 1));
+								Vector4f sb = Transformations.calculatePoint(new Vector4f(0.5f, -0.5f, 0.5f, 1));
+								Vector4f sc = Transformations.calculatePoint(new Vector4f(0.5f, -0.5f, -0.5f, 1));
+								Vector4f sd = Transformations.calculatePoint(new Vector4f(-0.5f, -0.5f, -0.5f, 1));
+								Vector4f se = Transformations.calculatePoint(new Vector4f(-0.5f, 0.5f, 0.5f, 1));
+								Vector4f sf = Transformations.calculatePoint(new Vector4f(0.5f, 0.5f, 0.5f, 1));
+								Vector4f sg = Transformations.calculatePoint(new Vector4f(0.5f, 0.5f, -0.5f, 1));
+								Vector4f sh = Transformations.calculatePoint(new Vector4f(-0.5f, 0.5f, -0.5f, 1));
+								
+								drawTriangle(sa, sb, sf);
+								drawTriangle(sa, se, sf);
+								drawTriangle(sb, sc, sf);
+								drawTriangle(sc, sf, sg);
+								drawTriangle(sc, sh, sd);
+								drawTriangle(sc, sh, sg);
+								drawTriangle(sd, sa, se);
+								drawTriangle(sd, se, sh);
+								drawTriangle(sh, sf, sg);
+								drawTriangle(sh, sf, se);
+								drawTriangle(sh, sf, se);
+								drawTriangle(sa, sd, sc);
+								
+								break;
 							case WIREFRAME_CUBE:
-								Point3f a = Transformations.calculatePoint(new Point3f(-0.5f, -0.5f, 0.5f));
-								Point3f b = Transformations.calculatePoint(new Point3f(0.5f, -0.5f, 0.5f));
-								Point3f c = Transformations.calculatePoint(new Point3f(0.5f, -0.5f, -0.5f));
-								Point3f d = Transformations.calculatePoint(new Point3f(-0.5f, -0.5f, -0.5f));
-								Point3f e = Transformations.calculatePoint(new Point3f(-0.5f, 0.5f, 0.5f));
-								Point3f f = Transformations.calculatePoint(new Point3f(0.5f, 0.5f, 0.5f));
-								Point3f g = Transformations.calculatePoint(new Point3f(0.5f, 0.5f, -0.5f));
-								Point3f h = Transformations.calculatePoint(new Point3f(-0.5f, 0.5f, -0.5f));
+								Vector4f a = Transformations.calculatePoint(new Vector4f(-0.5f, -0.5f, 0.5f, 1));
+								Vector4f b = Transformations.calculatePoint(new Vector4f(0.5f, -0.5f, 0.5f, 1));
+								Vector4f c = Transformations.calculatePoint(new Vector4f(0.5f, -0.5f, -0.5f, 1));
+								Vector4f d = Transformations.calculatePoint(new Vector4f(-0.5f, -0.5f, -0.5f, 1));
+								Vector4f e = Transformations.calculatePoint(new Vector4f(-0.5f, 0.5f, 0.5f, 1));
+								Vector4f f = Transformations.calculatePoint(new Vector4f(0.5f, 0.5f, 0.5f, 1));
+								Vector4f g = Transformations.calculatePoint(new Vector4f(0.5f, 0.5f, -0.5f, 1));
+								Vector4f h = Transformations.calculatePoint(new Vector4f(-0.5f, 0.5f, -0.5f, 1));
 								
 								drawLine(a, b);
 								drawLine(b, c);
@@ -139,6 +171,21 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 								drawLine(b, f);
 								drawLine(c, g);
 								drawLine(d, h);
+								break;
+							case LOOKAT:
+								Transformations.setLookAt(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]), Float.parseFloat(parts[3]),
+										Float.parseFloat(parts[4]), Float.parseFloat(parts[5]), Float.parseFloat(parts[6]),
+										Float.parseFloat(parts[7]), Float.parseFloat(parts[8]), Float.parseFloat(parts[9]));
+								break;
+							case ORTHOGRAPHIC:
+								Transformations.setOrthographicProjection(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+										Float.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
+										Float.parseFloat(parts[6]));
+								break;
+							case FRUSTUM:
+								Transformations.setFrustumProjection(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+										Float.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
+										Float.parseFloat(parts[6]));
 								break;
 							default:
 								break;
@@ -173,6 +220,7 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 				drawPixel(x, y, 255, 255, 255);
 			}
 		}
+		zBuffer = new int[height][width];
 		setPreferredSize(new Dimension(width, height));
 		
 	}
@@ -187,11 +235,11 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 		color[2] = worldToScreenColor(b);
 	}
 	
-	private void drawLine(Point3f a, Point3f b) {
+	private void drawLine(Vector4f a, Vector4f b) {
 		drawLine(worldToScreenX(a.getX()), worldToScreenY(a.getY()), worldToScreenX(b.getX()), worldToScreenY(b.getY()));
 	}
 	
-	private void drawTriangle(Point3f a, Point3f b, Point3f c) {
+	private void drawTriangle(Vector4f a, Vector4f b, Vector4f c) {
 		drawTriangle(worldToScreenX(a.getX()), worldToScreenY(a.getY()), worldToScreenX(b.getX()), worldToScreenY(b.getY()),
 				worldToScreenX(c.getX()), worldToScreenY(c.getY()));
 	}
@@ -323,7 +371,7 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 		}
 	}
 	
-	void drawPixel(int x, int y, int r, int g, int b) {
+	private void drawPixel(int x, int y, int r, int g, int b) {
 		pixels[(height - y - 1) * width * 3 + x * 3] = r;
 		pixels[(height - y - 1) * width * 3 + x * 3 + 1] = g;
 		pixels[(height - y - 1) * width * 3 + x * 3 + 2] = b;
@@ -337,11 +385,6 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		
-	}
-	
-	@Override
-	public void keyReleased(KeyEvent e) {
 		float deg;
 		
 		if (e.getKeyCode() == KeyEvent.VK_UP) {
@@ -377,6 +420,11 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 			Transformations.setRotationMatrixX(new Matrix(data));
 			repaint();
 		}
+	}
+	
+	@Override
+	public void keyReleased(KeyEvent e) {
+		
 	}
 	
 	@Override

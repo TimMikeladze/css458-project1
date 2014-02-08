@@ -1,3 +1,4 @@
+package math;
 public class Matrix {
 	
 	private int rows;

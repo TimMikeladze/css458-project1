@@ -432,8 +432,17 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 	}
 	
 	public void reset() {
+		width = 0;
+		height = 0;
+		imageSize = 0;
+		pixels = null;
+		color = new int[3];
+		scanline = null;
 		xDegrees = 0;
 		yDegrees = 0;
+		zBuffer = null;
+		currentProjection = null;
+		
 		Transformations.reset();
 	}
 	

@@ -29,7 +29,7 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 	private int[] pixels;
 	private int[] color = new int[3];
 	
-	private Range[] coords;
+	private Range[] scanline;
 	private File inputFile;
 	private double xDegrees;
 	private double yDegrees;
@@ -40,9 +40,9 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 		
 		//inputFile = openFile();
 		//inputFile = new File("frustumWireframeCube.txt");
-		inputFile = new File("templeOrthoV2.txt");
+		//inputFile = new File("templeOrthoV2.txt");
 		//inputFile = new File("templeFrustumV4.txt");
-		//inputFile = new File("templeSide.txt");
+		inputFile = new File("templeSide.txt");
 		//inputFile = new File("test.txt");
 		if (inputFile != null) {
 			setFocusable(true);
@@ -82,28 +82,42 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 				if (parts != null && parts.length > 0) {
 					Inputs input = Inputs.find(parts[0]);
 					if (input != null && input.getNumberOfParameters() == parts.length) {
+						
+						Vector4f sa = new Vector4f(0.5f, 0.5f, 0.5f, 1f);
+						Vector4f sb = new Vector4f(0.5f, -0.5f, 0.5f, 1f);
+						Vector4f sc = new Vector4f(-0.5f, -0.5f, 0.5f, 1f);
+						Vector4f sd = new Vector4f(-0.5f, 0.5f, 0.5f, 1f);
+						Vector4f se = new Vector4f(0.5f, -0.5f, -0.5f, 1f);
+						Vector4f sf = new Vector4f(0.5f, 0.5f, -0.5f, 1f);
+						Vector4f sg = new Vector4f(-0.5f, -0.5f, -0.5f, 1f);
+						Vector4f sh = new Vector4f(-0.5f, 0.5f, -0.5f, 1f);
+						
+						Vector4f wa = new Vector4f(-0.5f, -0.5f, 0.5f, 1);
+						Vector4f wb = new Vector4f(0.5f, -0.5f, 0.5f, 1);
+						Vector4f wc = new Vector4f(0.5f, -0.5f, -0.5f, 1);
+						Vector4f wd = new Vector4f(-0.5f, -0.5f, -0.5f, 1);
+						Vector4f we = new Vector4f(-0.5f, 0.5f, 0.5f, 1);
+						Vector4f wf = new Vector4f(0.5f, 0.5f, 0.5f, 1);
+						Vector4f wg = new Vector4f(0.5f, 0.5f, -0.5f, 1);
+						Vector4f wh = new Vector4f(-0.5f, 0.5f, -0.5f, 1);
+						
 						switch (input) {
 							case DIMENSIONS:
 								setDimensions((int) Float.parseFloat(parts[1]), (int) Float.parseFloat(parts[2]));
 								break;
 							case LINE:
-								Vector4f point1 = Transformations.calculatePoint(new Vector4f(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
-										Float.parseFloat(parts[3]), 1));
-								Vector4f point2 = Transformations.calculatePoint(new Vector4f(Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
-										Float.parseFloat(parts[6]), 1));
+								Vector4f line1 = new Vector4f(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]), Float.parseFloat(parts[3]), 1);
+								Vector4f line2 = new Vector4f(Float.parseFloat(parts[4]), Float.parseFloat(parts[5]), Float.parseFloat(parts[6]), 1);
 								
-								drawLine(point1, point2);
+								drawLine(line1, line2);
 								break;
 							case RGB:
 								setColor(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]), Float.parseFloat(parts[3]));
 								break;
 							case TRIANGLE:
-								Vector4f tri1 = Transformations.calculatePoint(new Vector4f(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
-										Float.parseFloat(parts[3]), 1));
-								Vector4f tri2 = Transformations.calculatePoint(new Vector4f(Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
-										Float.parseFloat(parts[6]), 1));
-								Vector4f tri3 = Transformations.calculatePoint(new Vector4f(Float.parseFloat(parts[7]), Float.parseFloat(parts[8]),
-										Float.parseFloat(parts[9]), 1));
+								Vector4f tri1 = new Vector4f(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]), Float.parseFloat(parts[3]), 1);
+								Vector4f tri2 = new Vector4f(Float.parseFloat(parts[4]), Float.parseFloat(parts[5]), Float.parseFloat(parts[6]), 1);
+								Vector4f tri3 = new Vector4f(Float.parseFloat(parts[7]), Float.parseFloat(parts[8]), Float.parseFloat(parts[9]), 1);
 								
 								drawTriangle(tri1, tri2, tri3);
 								break;
@@ -126,51 +140,33 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 								Transformations.translate(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]), Float.parseFloat(parts[3]));
 								break;
 							case SOLID_CUBE:
-								Vector4f sa = Transformations.calculatePoint(new Vector4f(-0.5f, -0.5f, 0.5f, 1));
-								Vector4f sb = Transformations.calculatePoint(new Vector4f(0.5f, -0.5f, 0.5f, 1));
-								Vector4f sc = Transformations.calculatePoint(new Vector4f(0.5f, -0.5f, -0.5f, 1));
-								Vector4f sd = Transformations.calculatePoint(new Vector4f(-0.5f, -0.5f, -0.5f, 1));
-								Vector4f se = Transformations.calculatePoint(new Vector4f(-0.5f, 0.5f, 0.5f, 1));
-								Vector4f sf = Transformations.calculatePoint(new Vector4f(0.5f, 0.5f, 0.5f, 1));
-								Vector4f sg = Transformations.calculatePoint(new Vector4f(0.5f, 0.5f, -0.5f, 1));
-								Vector4f sh = Transformations.calculatePoint(new Vector4f(-0.5f, 0.5f, -0.5f, 1));
-								
-								drawTriangle(sa, sb, sf);
-								drawTriangle(sa, se, sf);
-								drawTriangle(sb, sc, sf);
-								drawTriangle(sc, sf, sg);
-								drawTriangle(sc, sh, sd);
-								drawTriangle(sc, sh, sg);
-								drawTriangle(sd, sa, se);
-								drawTriangle(sd, se, sh);
-								drawTriangle(sh, sf, sg);
-								drawTriangle(sh, sf, se);
-								drawTriangle(sh, sf, se);
+								drawTriangle(sa, sb, sc);
 								drawTriangle(sa, sd, sc);
+								drawTriangle(sa, sb, se);
+								drawTriangle(sa, sf, se);
+								drawTriangle(sc, sd, sg);
+								drawTriangle(sd, sh, sg);
+								drawTriangle(sg, sh, se);
+								drawTriangle(sh, se, sf);
+								drawTriangle(se, sb, sc);
+								drawTriangle(sc, sg, se);
+								drawTriangle(sd, sa, sf);
+								drawTriangle(sh, sf, sd);
 								
 								break;
 							case WIREFRAME_CUBE:
-								Vector4f a = Transformations.calculatePoint(new Vector4f(-0.5f, -0.5f, 0.5f, 1));
-								Vector4f b = Transformations.calculatePoint(new Vector4f(0.5f, -0.5f, 0.5f, 1));
-								Vector4f c = Transformations.calculatePoint(new Vector4f(0.5f, -0.5f, -0.5f, 1));
-								Vector4f d = Transformations.calculatePoint(new Vector4f(-0.5f, -0.5f, -0.5f, 1));
-								Vector4f e = Transformations.calculatePoint(new Vector4f(-0.5f, 0.5f, 0.5f, 1));
-								Vector4f f = Transformations.calculatePoint(new Vector4f(0.5f, 0.5f, 0.5f, 1));
-								Vector4f g = Transformations.calculatePoint(new Vector4f(0.5f, 0.5f, -0.5f, 1));
-								Vector4f h = Transformations.calculatePoint(new Vector4f(-0.5f, 0.5f, -0.5f, 1));
-								
-								drawLine(a, b);
-								drawLine(b, c);
-								drawLine(c, d);
-								drawLine(d, a);
-								drawLine(e, f);
-								drawLine(f, g);
-								drawLine(g, h);
-								drawLine(h, e);
-								drawLine(a, e);
-								drawLine(b, f);
-								drawLine(c, g);
-								drawLine(d, h);
+								drawLine(wa, wb);
+								drawLine(wb, wc);
+								drawLine(wc, wd);
+								drawLine(wd, wa);
+								drawLine(we, wf);
+								drawLine(wf, wg);
+								drawLine(wg, wh);
+								drawLine(wh, we);
+								drawLine(wa, we);
+								drawLine(wb, wf);
+								drawLine(wc, wg);
+								drawLine(wd, wh);
 								break;
 							case LOOKAT:
 								Transformations.setLookAt(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]), Float.parseFloat(parts[3]),
@@ -201,32 +197,34 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 		
 	}
 	
-	private int worldToScreenX(float x) {
-		return (int) ((width - 1.0f) * (x + 1.0f) / 2.0f);
-	}
-	
-	private int worldToScreenY(float x) {
-		return (int) ((height - 1.0f) * (x + 1.0f) / 2.0f);
-	}
-	
 	private void setDimensions(int width, int height) {
 		this.width = width;
 		this.height = height;
 		imageSize = width * height;
 		pixels = new int[imageSize * 3];
 		zBuffer = new float[height][width];
+		
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				drawPixel(x, y, 255, 255, 255);
 			}
 		}
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				zBuffer[i][j] = Float.MAX_VALUE;
+		
+		for (int x = 0; x < height; x++) {
+			for (int y = 0; y < width; y++) {
+				zBuffer[x][y] = Float.MAX_VALUE;
 			}
 		}
-		setPreferredSize(new Dimension(width, height));
 		
+		setPreferredSize(new Dimension(width, height));
+	}
+	
+	private int worldToScreenX(float x) {
+		return (int) ((width - 1.0f) * (x + 1.0f) / 2.0f);
+	}
+	
+	private int worldToScreenY(float x) {
+		return Math.round((height - 1.0f) * (x + 1.0f) / 2.0f);
 	}
 	
 	private int worldToScreenColor(float c) {
@@ -239,137 +237,140 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 		color[2] = worldToScreenColor(b);
 	}
 	
-	private void drawLine(Vector4f a, Vector4f b) {
-		drawLine(worldToScreenX(a.getX()), worldToScreenY(a.getY()), worldToScreenX(b.getX()), worldToScreenY(b.getY()), a.getZ(), b.getZ());
-	}
-	
 	private void drawTriangle(Vector4f a, Vector4f b, Vector4f c) {
-		drawTriangle(worldToScreenX(a.getX()), worldToScreenY(a.getY()), worldToScreenX(b.getX()), worldToScreenY(b.getY()),
-				worldToScreenX(c.getX()), worldToScreenY(c.getY()), a.getZ(), b.getZ(), c.getZ());
-	}
-	
-	private void drawTriangle(int sx0, int sy0, int sx1, int sy1, int sx2, int sy2, float sz0, float sz1, float sz2) {
+		scanline = new Range[height];
 		
-		// initialize array to keep track of all pixel positions
-		coords = new Range[height];
+		a = Transformations.calculatePoint(a);
+		b = Transformations.calculatePoint(b);
+		c = Transformations.calculatePoint(c);
 		
-		drawLine(sx0, sy0, sx1, sy1, true, (int) sz0, (int) sz1);
-		drawLine(sx0, sy0, sx2, sy2, true, (int) sz0, (int) sz2);
-		drawLine(sx1, sy1, sx2, sy2, true, (int) sz1, (int) sz2);
+		int x0 = worldToScreenX(a.getX());
+		int y0 = worldToScreenY(a.getY());
+		float z0 = a.getZ();
 		
-		int largestY = findLargestNum(sy0, sy1, sy2);
-		int smallestY = findSmallestNum(sy0, sy1, sy2);
+		int x1 = worldToScreenX(b.getX());
+		int y1 = worldToScreenY(b.getY());
+		float z1 = b.getZ();
 		
-		for (int i = smallestY; i <= largestY; i++) {
-			// only draw the lines that we've covered/initialized
-			if (coords[i] != null) {
-				drawLine(coords[i].getMin(), i, coords[i].getMax(), i, coords[i].getMin2(), coords[i].getMax2());
+		int x2 = worldToScreenX(c.getX());
+		int y2 = worldToScreenY(c.getY());
+		float z2 = c.getZ();
+		
+		drawLine(x0, y0, z0, x1, y1, z1, true);
+		drawLine(x0, y0, z0, x2, y2, z2, true);
+		drawLine(x1, y1, z1, x2, y2, z2, true);
+		
+		int maxY = Range.findLargest(y0, y1, y2);
+		int minY = Range.findSmallest(y0, y1, y2);
+		
+		for (int i = minY; i <= maxY; i++) {
+			if (scanline[i] != null) {
+				drawLine(scanline[i].getMin(), i, scanline[i].getMin2(), scanline[i].getMax(), i, scanline[i].getMax2(), false);
 			}
 		}
 	}
 	
-	private int findLargestNum(int sy0, int sy1, int sy2) {
-		return Math.max(Math.max(sy0, sy1), Math.max(sy1, sy2));
+	private void drawLine(Vector4f a, Vector4f b) {
+		Vector4f point1 = Transformations.calculatePoint(a);
+		Vector4f point2 = Transformations.calculatePoint(b);
+		
+		int x1 = worldToScreenX(point1.getX());
+		int y1 = worldToScreenY(point1.getY());
+		float z1 = point1.getZ();
+		
+		int x2 = worldToScreenX(point2.getX());
+		int y2 = worldToScreenY(point2.getY());
+		float z2 = point2.getZ();
+		
+		drawLine(x1, y1, z1, x2, y2, z2, false);
 	}
 	
-	private int findSmallestNum(int sy0, int sy1, int sy2) {
-		return Math.min(Math.min(sy0, sy2), Math.min(sy1, sy2));
-	}
-	
-	private void drawLine(int sx1, int sy1, int sx2, int sy2, float sz1, float sz2) {
-		drawLine(sx1, sy1, sx2, sy2, false, (int) sz1, (int) sz2);
-	}
-	
-	private void drawLine(int sx1, int sy1, int sx2, int sy2, boolean triangle, int sz1, int sz2) {
+	private void drawLine(int px0, int py1, float pz1, int px1, int py2, float pz2, boolean isTriangle) {
 		float slope;
 		
-		// avoids division by 0 and sets appropriate slope value
-		if (sx2 - sx1 == 0) {
+		if (px1 - px0 == 0) {
 			slope = Float.MAX_VALUE;
 		} else {
-			slope = (float) (sy2 - sy1) / (sx2 - sx1);
+			slope = (float) (py2 - py1) / (px1 - px0);
 		}
 		
-		int start, end;
-		float startz, endz, zchange, z;
+		int startPoint;
+		int endPoint;
+		float z;
+		float slopeZ;
+		float startPointZ;
+		float endPointZ;
+		
 		if (slope >= -1 && slope <= 1) {
 			float y;
-			// choose start and end points
-			if (sx1 < sx2) {
-				start = sx1;
-				startz = sz1;
-				end = sx2;
-				endz = sz2;
-				y = sy1;
+			if (px0 < px1) {
+				startPoint = px0;
+				startPointZ = pz1;
+				endPoint = px1;
+				endPointZ = pz2;
+				y = py1;
 			} else {
-				start = sx2;
-				startz = sz2;
-				end = sx1;
-				endz = sz1;
-				y = sy2;
+				startPoint = px1;
+				startPointZ = pz2;
+				endPoint = px0;
+				endPointZ = pz1;
+				y = py2;
 			}
 			
-			// calculate how much z should be incremented by and 
-			// at which value to start
-			zchange = (endz - startz) / (end - start);
-			z = startz;
+			z = startPointZ;
 			
-			for (int x = start; x <= end; x++) {
-				
+			slopeZ = (endPointZ - startPointZ) / (endPoint - startPoint);
+			
+			for (int x = startPoint; x <= endPoint; x++) {
 				int newY = Math.round(y);
-				
 				if (newY >= height) {
 					newY = height - 1;
 				} else if (newY < 0) {
 					newY = 0;
 				}
 				
-				if (triangle) {
-					// just keep track of where pixels would be placed
-					if (coords[newY] == null) {
-						coords[newY] = new Range(x, x, z, z);
+				if (isTriangle) {
+					if (scanline[newY] == null) {
+						scanline[newY] = new Range(x, x, z, z);
 					} else {
-						if (coords[newY].getMin() > x) {
-							coords[newY].setMin(x);
-							coords[newY].setMin2(z);
-						} else if (coords[newY].getMax() < x) {
-							coords[newY].setMax(x);
-							coords[newY].setMax2(z);
+						if (scanline[newY].getMin() > x) {
+							scanline[newY].setMin(x);
+							scanline[newY].setMin2(z);
+						} else if (scanline[newY].getMax() < x) {
+							scanline[newY].setMax(x);
+							scanline[newY].setMax2(z);
 						}
 					}
-				} else {
-					if (zBuffer[newY][x] > z) {
-						zBuffer[newY][x] = z;
-						drawPixel(x, newY, color[0], color[1], color[2]);
-					}
+				} else if (zBuffer[newY][x] > z) {
+					zBuffer[newY][x] = z;
+					drawPixel(x, newY, color[0], color[1], color[2]);
 				}
+				
 				y += slope;
-				z += zchange;
+				z += slopeZ;
 			}
 		} else if (slope > 1 || slope < -1) {
 			
 			float x;
-			// choose start and end points
-			if (sy1 < sy2) {
-				start = sy1;
-				startz = sz1;
-				end = sy2;
-				endz = sz2;
-				x = sx1;
+			if (py1 < py2) {
+				startPoint = py1;
+				startPointZ = pz1;
+				endPoint = py2;
+				endPointZ = pz2;
+				x = px0;
 			} else {
-				start = sy2;
-				startz = sz2;
-				end = sy1;
-				endz = sz1;
-				x = sx2;
+				startPoint = py2;
+				startPointZ = pz2;
+				endPoint = py1;
+				endPointZ = pz1;
+				x = px1;
 			}
 			
-			// calculate how much z should be incremented by and 
-			// at which value to start
-			zchange = (endz - startz) / (end - start);
-			z = startz;
+			z = startPointZ;
 			
-			for (int y = start; y <= end; y++) {
+			slopeZ = (endPointZ - startPointZ) / (endPoint - startPoint);
+			
+			for (int y = startPoint; y <= endPoint; y++) {
 				
 				int newX = Math.round(x);
 				
@@ -379,18 +380,16 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 					newX = 0;
 				}
 				
-				if (triangle) {
-					
-					// keep track of where the pixels would be placed
-					if (coords[y] == null) {
-						coords[y] = new Range(newX, newX, z, z);
+				if (isTriangle) {
+					if (scanline[y] == null) {
+						scanline[y] = new Range(newX, newX, z, z);
 					} else {
-						if (coords[y].getMin() > newX) {
-							coords[y].setMin(newX);
-							coords[y].setMin2(z);
-						} else if (coords[y].getMax() < newX) {
-							coords[y].setMax(newX);
-							coords[y].setMax2(z);
+						if (scanline[y].getMin() > newX) {
+							scanline[y].setMin(newX);
+							scanline[y].setMin2(z);
+						} else if (scanline[y].getMax() < newX) {
+							scanline[y].setMax(newX);
+							scanline[y].setMax2(z);
 						}
 					}
 				} else {
@@ -399,8 +398,9 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 						drawPixel(newX, y, color[0], color[1], color[2]);
 					}
 				}
+				
 				x += 1 / slope;
-				z += zchange;
+				z += slopeZ;
 			}
 		}
 	}
@@ -473,13 +473,4 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 		frame.setVisible(true);
 	}
 	
-	private void print(Object... obj) {
-		String s = "";
-		for (Object o : obj) {
-			s += " " + o.toString() + ",";
-		}
-		if (!s.isEmpty()) {
-			System.out.println(s.substring(1, s.length() - 1));
-		}
-	}
 }

@@ -44,4 +44,12 @@ public class Range {
 		this.max2 = max2;
 	}
 	
+	public static int findLargest(int sy0, int sy1, int sy2) {
+		return Math.max(Math.max(sy0, sy1), Math.max(sy1, sy2));
+	}
+	
+	public static int findSmallest(int sy0, int sy1, int sy2) {
+		return Math.min(Math.min(sy0, sy2), Math.min(sy1, sy2));
+	}
+	
 }

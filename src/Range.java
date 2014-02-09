@@ -2,10 +2,14 @@ public class Range {
 	
 	private int min;
 	private int max;
+	private float min2;
+	private float max2;
 	
-	public Range(int mi, int ma) {
+	public Range(int mi, int ma, float ni, float na) {
 		min = mi;
 		max = ma;
+		min2 = ni;
+		max2 = na;
 	}
 	
 	public int getMin() {
@@ -16,6 +20,14 @@ public class Range {
 		return max;
 	}
 	
+	public float getMin2() {
+		return min2;
+	}
+	
+	public float getMax2() {
+		return max2;
+	}
+	
 	public void setMin(int min) {
 		this.min = min;
 	}
@@ -24,34 +36,12 @@ public class Range {
 		this.max = max;
 	}
 	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + max;
-		result = prime * result + min;
-		return result;
+	public void setMin2(float min2) {
+		this.min2 = min2;
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Range other = (Range) obj;
-		if (max != other.max) {
-			return false;
-		}
-		if (min != other.min) {
-			return false;
-		}
-		return true;
+	public void setMax2(float max2) {
+		this.max2 = max2;
 	}
 	
 }

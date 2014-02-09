@@ -34,8 +34,7 @@ public class Transformations {
 		
 		try {
 			transformationMatrix = new Matrix(data).multiply(transformationMatrix);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -48,8 +47,7 @@ public class Transformations {
 		//@formatter:on
 		try {
 			transformationMatrix = new Matrix(data).multiply(transformationMatrix);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -62,8 +60,7 @@ public class Transformations {
 		//@formatter:on
 		try {
 			transformationMatrix = new Matrix(data).multiply(transformationMatrix);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -76,8 +73,7 @@ public class Transformations {
 		//@formatter:on
 		try {
 			transformationMatrix = new Matrix(data).multiply(transformationMatrix);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -89,8 +85,7 @@ public class Transformations {
 		
 		try {
 			transformationMatrix = new Matrix(data).multiply(transformationMatrix);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -106,8 +101,7 @@ public class Transformations {
 		
 		try {
 			projectionMatrix = new Matrix(data).multiply(projectionMatrix);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -123,8 +117,7 @@ public class Transformations {
 		
 		try {
 			projectionMatrix = new Matrix(data).multiply(projectionMatrix);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -161,8 +154,7 @@ public class Transformations {
 			lookAtMatrix = c.multiply(tm)
 							.multiply(lookAtMatrix);
 			
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -173,8 +165,7 @@ public class Transformations {
 										.multiply(rotationMatrixY.multiply(rotationMatrixX.multiply(transformationMatrix.multiply(v.toMatrix()))));
 			return new Vector4f(m.getDataAt(0, 0) / m.getDataAt(3, 0), m.getDataAt(1, 0) / m.getDataAt(3, 0), m.getDataAt(2, 0) / m.getDataAt(3, 0),
 					m.getDataAt(3, 0) / m.getDataAt(3, 0));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;

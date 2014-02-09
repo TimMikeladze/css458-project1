@@ -1,6 +1,8 @@
-import math.Matrix;
-import math.Vector4f;
-
+/**
+ * @author Tim Mikeladze
+ * 
+ * 
+ */
 public class Transformations {
 	
 	private static final int IDENTITY_MATRIX_SIZE = 4;
@@ -9,6 +11,12 @@ public class Transformations {
 	private static Matrix rotationMatrixY = Matrix.identity(IDENTITY_MATRIX_SIZE);
 	private static Matrix projectionMatrix = Matrix.identity(IDENTITY_MATRIX_SIZE);
 	private static Matrix lookAtMatrix = Matrix.identity(IDENTITY_MATRIX_SIZE);
+	private static float left = Float.NaN;
+	private static float right = Float.NaN;
+	private static float bottom = Float.NaN;
+	private static float top = Float.NaN;
+	private static float near = Float.NaN;
+	private static float far = Float.NaN;
 	
 	public static void init() {
 		transformationMatrix = Matrix.identity(IDENTITY_MATRIX_SIZE);
@@ -25,6 +33,69 @@ public class Transformations {
 	public static void setRotationMatrixY(Matrix m) {
 		rotationMatrixY = new Matrix(m.getData());
 		
+	}
+	
+	public static float getLeft() {
+		return left;
+	}
+	
+	public static void setLeft(float left) {
+		Transformations.left = left;
+	}
+	
+	public static float getRight() {
+		return right;
+	}
+	
+	public static void setRight(float right) {
+		Transformations.right = right;
+	}
+	
+	public static float getBottom() {
+		return bottom;
+	}
+	
+	public static void setBottom(float bottom) {
+		Transformations.bottom = bottom;
+	}
+	
+	public static float getTop() {
+		return top;
+	}
+	
+	public static void setTop(float top) {
+		Transformations.top = top;
+	}
+	
+	public static float getNear() {
+		return near;
+	}
+	
+	public static void setNear(float near) {
+		Transformations.near = near;
+	}
+	
+	public static float getFar() {
+		return far;
+	}
+	
+	public static void setFar(float far) {
+		Transformations.far = far;
+	}
+	
+	public static void reset() {
+		left = Float.NaN;
+		right = Float.NaN;
+		bottom = Float.NaN;
+		top = Float.NaN;
+		near = Float.NaN;
+		far = Float.NaN;
+		
+		transformationMatrix = Matrix.identity(IDENTITY_MATRIX_SIZE);
+		rotationMatrixX = Matrix.identity(IDENTITY_MATRIX_SIZE);
+		rotationMatrixY = Matrix.identity(IDENTITY_MATRIX_SIZE);
+		projectionMatrix = Matrix.identity(IDENTITY_MATRIX_SIZE);
+		lookAtMatrix = Matrix.identity(IDENTITY_MATRIX_SIZE);
 	}
 	
 	public static void translate(float dx, float dy, float dz) {
@@ -90,7 +161,36 @@ public class Transformations {
 		}
 	}
 	
-	public static void setOrthographicProjection(float left, float right, float bottom, float top, float near, float far) {
+	public static void setProjection(Inputs projection, float left, float right, float bottom, float top, float near, float far) {
+		if (Float.isNaN(Transformations.left)) {
+			Transformations.left = left;
+		}
+		if (Float.isNaN(Transformations.right)) {
+			Transformations.right = right;
+		}
+		if (Float.isNaN(Transformations.bottom)) {
+			Transformations.bottom = bottom;
+		}
+		if (Float.isNaN(Transformations.top)) {
+			Transformations.top = top;
+		}
+		if (Float.isNaN(Transformations.near)) {
+			Transformations.near = near;
+		}
+		if (Float.isNaN(Transformations.far)) {
+			Transformations.far = far;
+		}
+		
+		if (projection == Inputs.ORTHOGRAPHIC) {
+			setOrthographicProjection(Transformations.left, Transformations.right, Transformations.bottom, Transformations.top, Transformations.near,
+					Transformations.far);
+		} else if (projection == Inputs.FRUSTUM) {
+			setFrustumProjection(Transformations.left, Transformations.right, Transformations.bottom, Transformations.top, Transformations.near,
+					Transformations.far);
+		}
+	}
+	
+	private static void setOrthographicProjection(float left, float right, float bottom, float top, float near, float far) {
 		projectionMatrix = Matrix.identity(IDENTITY_MATRIX_SIZE);
 		//@formatter:off
 		float[][] data = {	{ 2 / (right - left), 0, 0, - (right + left) / (right - left) }, 
@@ -106,7 +206,7 @@ public class Transformations {
 		}
 	}
 	
-	public static void setFrustumProjection(float left, float right, float bottom, float top, float near, float far) {
+	private static void setFrustumProjection(float left, float right, float bottom, float top, float near, float far) {
 		projectionMatrix = Matrix.identity(IDENTITY_MATRIX_SIZE);
 		//@formatter:off
 		float[][] data = {	{ 2f * near / (right - left), 0, (right + left) / (right - left), 0 }, 
@@ -121,22 +221,13 @@ public class Transformations {
 			e.printStackTrace();
 		}
 		
-		/*
-		 *  c[0][0] = 2.0*zNear/(right - left);
-		    c[0][2] = (right + left)/(right - left);
-		    c[1][1] = 2.0*zNear/(top - bottom);
-		    c[1][2] = (top + bottom)/(top - bottom);
-		    c[2][2] = -(zFar + zNear)/(zFar - zNear);
-		    c[2][3] = -2.0*zFar*zNear/(zFar - zNear);
-		    c[3][2] = -1.0;
-		 */
 	}
 	
 	public static void setLookAt(float eyeX, float eyeY, float eyeZ, float atX, float atY, float atZ, float upX, float upY, float upZ) {
 		lookAtMatrix = Matrix.identity(IDENTITY_MATRIX_SIZE);
 		
-		Vector4f n = (new Vector4f(eyeX, eyeY, eyeZ, 0).subtractVector(new Vector4f(atX, atY, atZ, 0))).getNormalizedVector();
-		Vector4f u = (new Vector4f(upX, upY, upZ, 0).getCrossProduct(n)).getNormalizedVector();
+		Vector4f n = (new Vector4f(eyeX, eyeY, eyeZ, 1).subtractVector(new Vector4f(atX, atY, atZ, 1))).getNormalizedVector();
+		Vector4f u = (new Vector4f(upX, upY, upZ, 1).getCrossProduct(n)).getNormalizedVector();
 		Vector4f v = (n.getCrossProduct(u)).getNormalizedVector();
 		Vector4f t = new Vector4f(0, 0, 0, 1);
 		//@formatter:off
@@ -151,8 +242,7 @@ public class Transformations {
 		//@formatter:on
 		Matrix tm = new Matrix(translate);
 		try {
-			lookAtMatrix = c.multiply(tm)
-							.multiply(lookAtMatrix);
+			lookAtMatrix = c.multiply(tm);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

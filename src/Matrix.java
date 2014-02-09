@@ -1,4 +1,8 @@
-package math;
+/**
+ * @author Tim Mikeladze
+ * 
+ * 
+ */
 public class Matrix {
 	
 	private int rows;

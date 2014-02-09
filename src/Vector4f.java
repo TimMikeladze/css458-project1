@@ -1,6 +1,8 @@
-
-package math;
-
+/**
+ * @author Tim Mikeladze
+ * 
+ * 
+ */
 public class Vector4f {
 	
 	private float x;

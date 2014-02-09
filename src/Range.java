@@ -1,3 +1,8 @@
+/**
+ * @author Tim Mikeladze
+ * 
+ * 
+ */
 public class Range {
 	
 	private int min;

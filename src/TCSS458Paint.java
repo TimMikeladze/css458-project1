@@ -1,5 +1,7 @@
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
@@ -11,10 +13,10 @@ import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-
-import math.Matrix;
-import math.Vector4f;
 
 /**
  * @author Tim Mikeladze
@@ -36,21 +38,19 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 	
 	private float[][] zBuffer;
 	
+	private Inputs currentProjection;
+	
 	public TCSS458Paint() {
 		
-		//inputFile = openFile();
-		//inputFile = new File("frustumWireframeCube.txt");
-		//inputFile = new File("templeOrthoV2.txt");
-		//inputFile = new File("templeFrustumV4.txt");
-		inputFile = new File("templeSide.txt");
-		//inputFile = new File("test.txt");
+		//openFile();
+		inputFile = new File("templeFrustumV4.txt");
 		if (inputFile != null) {
 			setFocusable(true);
 			addKeyListener(this);
 			try {
 				drawFile();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.exit(0);
 			}
 		}
 		
@@ -174,14 +174,27 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 										Float.parseFloat(parts[7]), Float.parseFloat(parts[8]), Float.parseFloat(parts[9]));
 								break;
 							case ORTHOGRAPHIC:
-								Transformations.setOrthographicProjection(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
-										Float.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
-										Float.parseFloat(parts[6]));
+								if (currentProjection == null) {
+									Transformations.setProjection(Inputs.ORTHOGRAPHIC, Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+											Float.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
+											Float.parseFloat(parts[6]));
+								} else {
+									Transformations.setProjection(currentProjection, Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+											Float.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
+											Float.parseFloat(parts[6]));
+								}
 								break;
 							case FRUSTUM:
-								Transformations.setFrustumProjection(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
-										Float.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
-										Float.parseFloat(parts[6]));
+								if (currentProjection == null) {
+									Transformations.setProjection(Inputs.FRUSTUM, Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+											Float.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
+											Float.parseFloat(parts[6]));
+								} else {
+									Transformations.setProjection(currentProjection, Float.parseFloat(parts[1]), Float.parseFloat(parts[2]),
+											Float.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float.parseFloat(parts[5]),
+											Float.parseFloat(parts[6]));
+								}
+								
 								break;
 							default:
 								break;
@@ -411,10 +424,19 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 		pixels[(height - y - 1) * width * 3 + x * 3 + 2] = b;
 	}
 	
-	private File openFile() {
+	public void openFile() {
 		JFileChooser fc = new JFileChooser();
 		fc.showOpenDialog(this);
-		return fc.getSelectedFile();
+		inputFile = fc.getSelectedFile();
+		if (inputFile != null) {
+			reset();
+		}
+	}
+	
+	public void reset() {
+		xDegrees = 0;
+		yDegrees = 0;
+		Transformations.reset();
 	}
 	
 	@Override
@@ -450,7 +472,68 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 					{ (float) -Math.sin(deg), 0, (float) Math.cos(deg), 0 }, { 0, 0, 0, 1 } };
 			Transformations.setRotationMatrixX(new Matrix(data));
 			repaint();
+		} else if (e.getKeyCode() == KeyEvent.VK_P) {
+			currentProjection = Inputs.FRUSTUM;
+			repaint();
+		} else if (e.getKeyCode() == KeyEvent.VK_O) {
+			currentProjection = Inputs.ORTHOGRAPHIC;
+			repaint();
+		} else if (!e.isShiftDown()) {
+			if (e.getKeyCode() == KeyEvent.VK_L) {
+				float width = Math.abs(Transformations.getRight() - Transformations.getLeft());
+				Transformations.setLeft(Transformations.getLeft() + width * 0.1f);
+				repaint();
+			} else if (e.getKeyCode() == KeyEvent.VK_R) {
+				float width = Math.abs(Transformations.getRight() - Transformations.getLeft());
+				Transformations.setRight(Transformations.getRight() - width * 0.1f);
+				repaint();
+			} else if (e.getKeyCode() == KeyEvent.VK_B) {
+				float height = Math.abs(Transformations.getTop() - Transformations.getBottom());
+				Transformations.setBottom(Transformations.getBottom() + height * 0.1f);
+				repaint();
+			} else if (e.getKeyCode() == KeyEvent.VK_T) {
+				float height = Math.abs(Transformations.getTop() - Transformations.getBottom());
+				Transformations.setTop(Transformations.getTop() - height * 0.1f);
+				repaint();
+			} else if (e.getKeyCode() == KeyEvent.VK_N) {
+				float depth = Math.abs(Transformations.getFar() - Transformations.getNear());
+				Transformations.setNear(Transformations.getNear() + depth * 0.1f);
+				repaint();
+			} else if (e.getKeyCode() == KeyEvent.VK_F) {
+				float depth = Math.abs(Transformations.getFar() - Transformations.getNear());
+				Transformations.setFar(Transformations.getFar() - depth * 0.1f);
+				repaint();
+			}
+		} else if (e.isShiftDown()) {
+			if (e.getKeyCode() == KeyEvent.VK_L) {
+				float width = Math.abs(Transformations.getRight() - Transformations.getLeft());
+				Transformations.setLeft(Transformations.getLeft() - width * 0.1f);
+				repaint();
+			} else if (e.getKeyCode() == KeyEvent.VK_R) {
+				float width = Math.abs(Transformations.getRight() - Transformations.getLeft());
+				Transformations.setRight(Transformations.getRight() + width * 0.1f);
+				repaint();
+			} else if (e.getKeyCode() == KeyEvent.VK_B) {
+				float height = Math.abs(Transformations.getTop() - Transformations.getBottom());
+				Transformations.setBottom(Transformations.getBottom() - height * 0.1f);
+				repaint();
+			} else if (e.getKeyCode() == KeyEvent.VK_T) {
+				float height = Math.abs(Transformations.getTop() - Transformations.getBottom());
+				Transformations.setTop(Transformations.getTop() + height * 0.1f);
+				repaint();
+			} else if (e.getKeyCode() == KeyEvent.VK_N) {
+				float depth = Math.abs(Transformations.getFar() - Transformations.getNear());
+				if (Transformations.getNear() - depth * 0.10 > 0) {
+					Transformations.setNear(Transformations.getNear() - depth * 0.1f);
+				}
+				repaint();
+			} else if (e.getKeyCode() == KeyEvent.VK_F) {
+				float depth = Math.abs(Transformations.getFar() - Transformations.getNear());
+				Transformations.setFar(Transformations.getFar() + depth * 0.1f);
+				repaint();
+			}
 		}
+		
 	}
 	
 	@Override
@@ -464,13 +547,43 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 	}
 	
 	public static void main(String args[]) {
+		final TCSS458Paint panel = new TCSS458Paint();
+		
 		JFrame frame = new JFrame("TCSS458Paint");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JMenuBar menubar = new JMenuBar();
+		JMenu menu = new JMenu("File");
+		JMenuItem file = new JMenuItem("Open file");
+		file.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				panel.openFile();
+				panel.repaint();
+			}
+			
+		});
+		menu.add(file);
+		JMenuItem reset = new JMenuItem("Reset");
+		reset.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				panel.reset();
+				panel.repaint();
+			}
+			
+		});
+		menu.add(reset);
+		menubar.add(menu);
+		frame.setJMenuBar(menubar);
+		
 		frame.getContentPane()
-				.add(new TCSS458Paint());
+				.add(panel);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 	}
-	
 }

@@ -34,7 +34,7 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 	private double xDegrees;
 	private double yDegrees;
 	
-	private int[][] zBuffer;
+	private float[][] zBuffer;
 	
 	public TCSS458Paint() {
 		
@@ -43,13 +43,13 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 		//inputFile = new File("templeOrthoV2.txt");
 		inputFile = new File("templeFrustumV4.txt");
 		//inputFile = new File("templeSide.txt");
+		//inputFile = new File("test.txt");
 		if (inputFile != null) {
 			setFocusable(true);
 			addKeyListener(this);
 			try {
 				drawFile();
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -64,9 +64,9 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 			WritableRaster raster = image.getRaster();
 			raster.setPixels(0, 0, width, height, pixels);
 			g.drawImage(image, 0, 0, null);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(0);
 		}
 		
 	}
@@ -190,8 +190,7 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 							default:
 								break;
 						}
-					}
-					else {
+					} else {
 						throw new IOException("Error in input file syntax at line " + lineNumber);
 					}
 				}
@@ -215,12 +214,13 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 		this.height = height;
 		imageSize = width * height;
 		pixels = new int[imageSize * 3];
+		zBuffer = new float[width][height];
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				drawPixel(x, y, 255, 255, 255);
+				zBuffer[x][y] = Float.MAX_VALUE;
 			}
 		}
-		zBuffer = new int[height][width];
 		setPreferredSize(new Dimension(width, height));
 		
 	}
@@ -442,4 +442,13 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 		frame.setVisible(true);
 	}
 	
+	private void print(Object... obj) {
+		String s = "";
+		for (Object o : obj) {
+			s += " " + o.toString() + ",";
+		}
+		if (!s.isEmpty()) {
+			System.out.println(s.substring(1, s.length() - 1));
+		}
+	}
 }

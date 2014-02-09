@@ -41,9 +41,7 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 	private Inputs currentProjection;
 	
 	public TCSS458Paint() {
-		
-		//openFile();
-		inputFile = new File("templeFrustumV4.txt");
+		openFile();
 		if (inputFile != null) {
 			setFocusable(true);
 			addKeyListener(this);

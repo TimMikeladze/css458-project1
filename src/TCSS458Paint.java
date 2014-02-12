@@ -216,11 +216,6 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				drawPixel(x, y, 255, 255, 255);
-			}
-		}
-		
-		for (int x = 0; x < height; x++) {
-			for (int y = 0; y < width; y++) {
 				zBuffer[x][y] = Float.MAX_VALUE;
 			}
 		}

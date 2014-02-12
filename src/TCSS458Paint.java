@@ -75,30 +75,29 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 			String line;
 			int lineNumber = 1;
 			
+			Vector4f sa = new Vector4f(0.5f, 0.5f, 0.5f, 1f);
+			Vector4f sb = new Vector4f(0.5f, -0.5f, 0.5f, 1f);
+			Vector4f sc = new Vector4f(-0.5f, -0.5f, 0.5f, 1f);
+			Vector4f sd = new Vector4f(-0.5f, 0.5f, 0.5f, 1f);
+			Vector4f se = new Vector4f(0.5f, -0.5f, -0.5f, 1f);
+			Vector4f sf = new Vector4f(0.5f, 0.5f, -0.5f, 1f);
+			Vector4f sg = new Vector4f(-0.5f, -0.5f, -0.5f, 1f);
+			Vector4f sh = new Vector4f(-0.5f, 0.5f, -0.5f, 1f);
+			
+			Vector4f wa = new Vector4f(-0.5f, -0.5f, 0.5f, 1);
+			Vector4f wb = new Vector4f(0.5f, -0.5f, 0.5f, 1);
+			Vector4f wc = new Vector4f(0.5f, -0.5f, -0.5f, 1);
+			Vector4f wd = new Vector4f(-0.5f, -0.5f, -0.5f, 1);
+			Vector4f we = new Vector4f(-0.5f, 0.5f, 0.5f, 1);
+			Vector4f wf = new Vector4f(0.5f, 0.5f, 0.5f, 1);
+			Vector4f wg = new Vector4f(0.5f, 0.5f, -0.5f, 1);
+			Vector4f wh = new Vector4f(-0.5f, 0.5f, -0.5f, 1);
+			
 			while ((line = br.readLine()) != null) {
 				String[] parts = line.split("\\s+");
 				if (parts != null && parts.length > 0) {
 					Inputs input = Inputs.find(parts[0]);
 					if (input != null && input.getNumberOfParameters() == parts.length) {
-						
-						Vector4f sa = new Vector4f(0.5f, 0.5f, 0.5f, 1f);
-						Vector4f sb = new Vector4f(0.5f, -0.5f, 0.5f, 1f);
-						Vector4f sc = new Vector4f(-0.5f, -0.5f, 0.5f, 1f);
-						Vector4f sd = new Vector4f(-0.5f, 0.5f, 0.5f, 1f);
-						Vector4f se = new Vector4f(0.5f, -0.5f, -0.5f, 1f);
-						Vector4f sf = new Vector4f(0.5f, 0.5f, -0.5f, 1f);
-						Vector4f sg = new Vector4f(-0.5f, -0.5f, -0.5f, 1f);
-						Vector4f sh = new Vector4f(-0.5f, 0.5f, -0.5f, 1f);
-						
-						Vector4f wa = new Vector4f(-0.5f, -0.5f, 0.5f, 1);
-						Vector4f wb = new Vector4f(0.5f, -0.5f, 0.5f, 1);
-						Vector4f wc = new Vector4f(0.5f, -0.5f, -0.5f, 1);
-						Vector4f wd = new Vector4f(-0.5f, -0.5f, -0.5f, 1);
-						Vector4f we = new Vector4f(-0.5f, 0.5f, 0.5f, 1);
-						Vector4f wf = new Vector4f(0.5f, 0.5f, 0.5f, 1);
-						Vector4f wg = new Vector4f(0.5f, 0.5f, -0.5f, 1);
-						Vector4f wh = new Vector4f(-0.5f, 0.5f, -0.5f, 1);
-						
 						switch (input) {
 							case DIMENSIONS:
 								setDimensions((int) Float.parseFloat(parts[1]), (int) Float.parseFloat(parts[2]));
@@ -150,7 +149,6 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 								drawTriangle(sc, sg, se);
 								drawTriangle(sd, sa, sf);
 								drawTriangle(sh, sf, sd);
-								
 								break;
 							case WIREFRAME_CUBE:
 								drawLine(wa, wb);
@@ -299,7 +297,7 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 	private void drawLine(int px0, int py1, float pz1, int px1, int py2, float pz2, boolean isTriangle) {
 		float slope;
 		
-		if (px1 - px0 == 0) {
+		if (px1 == px0) {
 			slope = Float.MAX_VALUE;
 		} else {
 			slope = (float) (py2 - py1) / (px1 - px0);
@@ -403,11 +401,9 @@ public class TCSS458Paint extends JPanel implements KeyListener {
 							scanline[y].setMax2(z);
 						}
 					}
-				} else {
-					if (zBuffer[y][newX] > z) {
-						zBuffer[y][newX] = z;
-						drawPixel(newX, y, color[0], color[1], color[2]);
-					}
+				} else if (zBuffer[y][newX] > z) {
+					zBuffer[y][newX] = z;
+					drawPixel(newX, y, color[0], color[1], color[2]);
 				}
 				
 				x += 1 / slope;
